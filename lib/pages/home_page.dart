@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_flutter/service/database.dart';
 import 'package:flutter/material.dart';
 import '../model/Recipe.dart';
 import 'add_recipe_page.dart';
@@ -7,14 +7,7 @@ import 'edit_recipe_page.dart'; // Nova página para edição
 
 class HomePage extends StatelessWidget {
   Stream<List<Recipe>> getRecipes() {
-    return FirebaseFirestore.instance
-        .collection('recipe')
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs
-          .map((doc) => Recipe.fromMap(doc.data(), doc.id))
-          .toList();
-    });
+    return DatabaseMethods().getRecipes();
   }
 
   @override
@@ -54,8 +47,7 @@ class HomePage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EditRecipePage(
-                              recipe: recipe), // Página de edição
+                          builder: (context) => EditRecipePage(recipe: recipe),
                         ),
                       );
                     },

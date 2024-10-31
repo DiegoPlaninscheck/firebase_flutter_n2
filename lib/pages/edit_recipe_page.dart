@@ -1,6 +1,6 @@
 import 'package:firebase_flutter/service/database.dart';
 import 'package:flutter/material.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../model/Recipe.dart';
 
 class EditRecipePage extends StatefulWidget {
@@ -43,16 +43,6 @@ class _EditRecipePageState extends State<EditRecipePage> {
   Future<void> _updateRecipe() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // await FirebaseFirestore.instance
-        //     .collection('recipe')
-        //     .doc(widget.recipe.id)
-        //     .update({
-        //   'title': _titleController.text,
-        //   'description': _descriptionController.text,
-        //   'ingredients': _ingredientsController.text,
-        //   'instructions': _instructionsController.text
-        // });
-
         await DatabaseMethods().updateRecipe(widget.recipe.id, {
           'title': _titleController.text,
           'description': _descriptionController.text,
@@ -60,10 +50,15 @@ class _EditRecipePageState extends State<EditRecipePage> {
           'instructions': _instructionsController.text
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Receita atualizada com sucesso!')),
+        Fluttertoast.showToast(
+          msg: "Receita atualizada com sucesso!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
         );
-        Navigator.pop(context); // Volta para a página anterior
+        Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao atualizar a receita: $e')),
@@ -75,16 +70,28 @@ class _EditRecipePageState extends State<EditRecipePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Editar Receita')),
+      appBar: AppBar(
+        title: const Text('Editar Receita'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
-              TextFormField(
+              Text(
+                "Edite os detalhes da sua receita",
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              _buildTextField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Título'),
+                label: 'Título',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, insira o título';
@@ -92,11 +99,10 @@ class _EditRecipePageState extends State<EditRecipePage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              TextFormField(
+              _buildTextField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Descrição'),
-                maxLines: 5,
+                label: 'Descrição',
+                maxLines: 3,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, insira a descrição';
@@ -104,11 +110,10 @@ class _EditRecipePageState extends State<EditRecipePage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              TextFormField(
+              _buildTextField(
                 controller: _ingredientsController,
-                decoration: const InputDecoration(labelText: 'Ingredientes'),
-                maxLines: 5,
+                label: 'Ingredientes',
+                maxLines: 3,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, insira os ingredientes';
@@ -116,26 +121,65 @@ class _EditRecipePageState extends State<EditRecipePage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
-              const SizedBox(height: 16),
-              TextFormField(
+              _buildTextField(
                 controller: _instructionsController,
-                decoration: const InputDecoration(labelText: 'Instruções'),
+                label: 'Instruções',
                 maxLines: 5,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, insira as instruções ';
+                    return 'Por favor, insira as instruções';
                   }
                   return null;
                 },
               ),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _updateRecipe,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 32.0, vertical: 16.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
                 child: const Text('Salvar Alterações'),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    String? Function(String?)? validator,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Theme.of(context).primaryColor),
+          filled: true,
+          fillColor: Theme.of(context).colorScheme.surface,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+        maxLines: maxLines,
+        validator: validator,
       ),
     );
   }

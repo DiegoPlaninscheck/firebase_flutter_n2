@@ -1,9 +1,7 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_flutter/service/database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:random_string/random_string.dart';
-// import '../model/Recipe.dart';
 
 class AddRecipePage extends StatefulWidget {
   @override
@@ -29,13 +27,13 @@ class _AddRecipePageState extends State<AddRecipePage> {
     await DatabaseMethods().addRecipe(recipe, id).then(
       (value) {
         Fluttertoast.showToast(
-            msg: "This is Center Short Toast",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+          msg: "Receita adicionada com sucesso!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       },
     );
   }
@@ -43,32 +41,47 @@ class _AddRecipePageState extends State<AddRecipePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Adicionar Receita")),
+      appBar: AppBar(
+        title: const Text("Adicionar Receita"),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: "Título"),
+              Text(
+                "Adicione uma nova receita",
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              _buildTextField(
+                label: "Título",
                 onChanged: (value) => title = value,
                 validator: (value) =>
                     value!.isEmpty ? 'Campo obrigatório' : null,
               ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: "Descrição"),
+              _buildTextField(
+                label: "Descrição",
                 onChanged: (value) => description = value,
+                maxLines: 3,
               ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: "Ingredientes"),
+              _buildTextField(
+                label: "Ingredientes",
                 onChanged: (value) => ingredients = value,
+                maxLines: 3,
               ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: "Instruções"),
+              _buildTextField(
+                label: "Instruções",
                 onChanged: (value) => instructions = value,
+                maxLines: 5,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -76,11 +89,51 @@ class _AddRecipePageState extends State<AddRecipePage> {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text("Adicionar"),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 32.0, vertical: 16.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
+                child: const Text("Adicionar Receita"),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required Function(String) onChanged,
+    int maxLines = 1,
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: TextFormField(
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Theme.of(context).primaryColor),
+          filled: true,
+          fillColor: Theme.of(context).colorScheme.surface,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+        onChanged: onChanged,
+        maxLines: maxLines,
+        validator: validator,
       ),
     );
   }
