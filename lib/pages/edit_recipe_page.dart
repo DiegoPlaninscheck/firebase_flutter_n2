@@ -102,7 +102,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
               _buildTextField(
                 controller: _descriptionController,
                 label: 'Descrição',
-                maxLines: 3,
+                maxLines: 5,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, insira a descrição';
@@ -113,7 +113,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
               _buildTextField(
                 controller: _ingredientsController,
                 label: 'Ingredientes',
-                maxLines: 3,
+                maxLines: 5,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, insira os ingredientes';

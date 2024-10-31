@@ -69,16 +69,22 @@ class _AddRecipePageState extends State<AddRecipePage> {
               _buildTextField(
                 label: "Descrição",
                 onChanged: (value) => description = value,
-                maxLines: 3,
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obrigatório' : null,
+                maxLines: 5,
               ),
               _buildTextField(
                 label: "Ingredientes",
                 onChanged: (value) => ingredients = value,
-                maxLines: 3,
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obrigatório' : null,
+                maxLines: 5,
               ),
               _buildTextField(
                 label: "Instruções",
                 onChanged: (value) => instructions = value,
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obrigatório' : null,
                 maxLines: 5,
               ),
               const SizedBox(height: 30),
