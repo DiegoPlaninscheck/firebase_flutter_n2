@@ -1,14 +1,17 @@
-import 'package:firebase_flutter/service/database.dart';
+import 'package:firebase_flutter/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../model/Recipe.dart';
 
+// Tela de detalhes de uma receita, recebendo um objeto Recipe como parâmetro
 class RecipeDetail extends StatelessWidget {
   final Recipe recipe;
 
   RecipeDetail({required this.recipe});
 
+  // Função para excluir a receita do banco de dados
   Future<void> deleteRecipe(String id) async {
+    // Mostra uma mensagem de sucesso quando a receita é excluída
     Fluttertoast.showToast(
       msg: "Receita excluída com sucesso!",
       toastLength: Toast.LENGTH_SHORT,
@@ -17,6 +20,8 @@ class RecipeDetail extends StatelessWidget {
       textColor: Colors.white,
       fontSize: 16.0,
     );
+
+    // Chama o método de exclusão no banco de dados
     await DatabaseMethods().deleteRecipe(id);
   }
 
@@ -24,6 +29,7 @@ class RecipeDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // Define o título da AppBar como o título da receita
         title: Text(recipe.title),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -31,6 +37,7 @@ class RecipeDetail extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
+            // Exibe o título da receita
             Text(
               recipe.title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -40,20 +47,29 @@ class RecipeDetail extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
+
+            // Exibe a descrição da receita
             Text(
               recipe.description,
               style: const TextStyle(fontSize: 16, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
             const Divider(height: 30, thickness: 1),
+
+            // Exibe o título "Ingredientes" e a lista de ingredientes
             _buildSectionTitle(context, "Ingredientes"),
             _buildTextContent(recipe.ingredients),
             const Divider(height: 30, thickness: 1),
+
+            // Exibe o título "Instruções" e as instruções da receita
             _buildSectionTitle(context, "Instruções"),
             _buildTextContent(recipe.instructions),
             const SizedBox(height: 30),
+
+            // Botão para excluir a receita
             ElevatedButton.icon(
               onPressed: () async {
+                // Chama a função de exclusão e volta para a tela anterior
                 await deleteRecipe(recipe.id);
                 Navigator.pop(context);
               },
@@ -73,6 +89,7 @@ class RecipeDetail extends StatelessWidget {
     );
   }
 
+  // Método para criar um título de seção com estilo específico
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
@@ -83,6 +100,7 @@ class RecipeDetail extends StatelessWidget {
     );
   }
 
+  // Método para exibir conteúdo de texto, como ingredientes ou instruções
   Widget _buildTextContent(String content) {
     return Text(
       content,

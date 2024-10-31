@@ -1,8 +1,9 @@
-import 'package:firebase_flutter/service/database.dart';
+import 'package:firebase_flutter/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../model/Recipe.dart';
 
+// Tela de edição de receita, recebendo um objeto Recipe como parâmetro
 class EditRecipePage extends StatefulWidget {
   final Recipe recipe;
 
@@ -14,6 +15,8 @@ class EditRecipePage extends StatefulWidget {
 
 class _EditRecipePageState extends State<EditRecipePage> {
   final _formKey = GlobalKey<FormState>();
+
+  // Controladores para os campos de texto do formulário
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   late TextEditingController _ingredientsController;
@@ -22,6 +25,8 @@ class _EditRecipePageState extends State<EditRecipePage> {
   @override
   void initState() {
     super.initState();
+
+    // Inicializa os controladores com os valores da receita recebida
     _titleController = TextEditingController(text: widget.recipe.title);
     _descriptionController =
         TextEditingController(text: widget.recipe.description);
@@ -33,6 +38,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
 
   @override
   void dispose() {
+    // Libera os controladores quando a tela é fechada
     _titleController.dispose();
     _descriptionController.dispose();
     _ingredientsController.dispose();
@@ -40,9 +46,12 @@ class _EditRecipePageState extends State<EditRecipePage> {
     super.dispose();
   }
 
+  // Função para atualizar a receita no banco de dados
   Future<void> _updateRecipe() async {
+    // Verifica se o formulário é válido
     if (_formKey.currentState!.validate()) {
       try {
+        // Chama o método de atualização de receita no banco de dados
         await DatabaseMethods().updateRecipe(widget.recipe.id, {
           'title': _titleController.text,
           'description': _descriptionController.text,
@@ -50,6 +59,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
           'instructions': _instructionsController.text
         });
 
+        // Mostra uma mensagem de sucesso
         Fluttertoast.showToast(
           msg: "Receita atualizada com sucesso!",
           toastLength: Toast.LENGTH_SHORT,
@@ -58,8 +68,11 @@ class _EditRecipePageState extends State<EditRecipePage> {
           textColor: Colors.white,
           fontSize: 16.0,
         );
+
+        // Fecha a tela de edição
         Navigator.pop(context);
       } catch (e) {
+        // Mostra uma mensagem de erro caso a atualização falhe
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao atualizar a receita: $e')),
         );
@@ -80,6 +93,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
           key: _formKey,
           child: ListView(
             children: [
+              // Título e descrição da tela
               Text(
                 "Edite os detalhes da sua receita",
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -89,6 +103,8 @@ class _EditRecipePageState extends State<EditRecipePage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
+
+              // Campos de texto para editar título, descrição, ingredientes e instruções
               _buildTextField(
                 controller: _titleController,
                 label: 'Título',
@@ -133,6 +149,8 @@ class _EditRecipePageState extends State<EditRecipePage> {
                 },
               ),
               const SizedBox(height: 30),
+
+              // Botão para salvar as alterações
               ElevatedButton(
                 onPressed: _updateRecipe,
                 style: ElevatedButton.styleFrom(
@@ -153,6 +171,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
     );
   }
 
+  // Método para criar campos de texto com estilo personalizado e validação
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
